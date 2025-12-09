@@ -83,7 +83,7 @@ def save_output_json(data, file_name: str):
 
 def main():
     API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
-    FILE_NAME = 'ARACAJU.2025.03 - Baixo Padrão (Moradas da Aruana) - SH.pdf'
+    FILE_NAME = 'ARACAJU.2025.03 - Baixo Padrão (Moradas da Aruana) - Alumbox.pdf'
     PATH = f"data/{FILE_NAME}"
     
     ingestor = Ingestion(api_key=API_KEY)
