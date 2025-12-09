@@ -10,3 +10,11 @@ class Item(BaseModel):
     
 class Itens(BaseModel):
     itens: List[Item]= Field(description="Uma lista de todos os itens do pedido encontrados na proposta")
+    
+class ResumeProposal(BaseModel):
+    supplier: str = Field(description="Nome do fornecedor")
+    date: str = Field(description="Data da proposta. Ex: '2025-12-09' ")
+    city: str = Field(description="Cidade")
+    state: str = Field(description="Estado")
+    contact: str = Field(description="Informações de contato, como telefone ou email")
+    other_info: str = Field(description='Outras informações qualitativas da proposta, como frete, observações de parcelamentos, descontos, etc.')
