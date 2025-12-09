@@ -25,10 +25,32 @@ class Ingestion:
 
         return pages_content
     
+    
+    def extract_resume(self, full_text: str):
+        extractor = LlamaExtract(api_key=self.api_key)
+        
+        agent_name = 'extract-resume'
+        
+        agents = extractor.list_agents()
+        names = [a.name for a in agents]
+        
+        if agent_name in names:
+            agent = extractor.get_agent(name=agent_name)
+        else:
+            agent = extractor.create_agent(
+                name=agent_name, data_schema=ResumeProposal
+            )
+            
+        result = agent.extract(
+            SourceText(text_content=full_text)
+        )
+        
+        return result.data
+    
     def extract_itens(self, pages_content: list):
         extractor = LlamaExtract(api_key=self.api_key)
         
-        agent_name = 'extract-agent'
+        agent_name = 'extract-itens'
         
         agents = extractor.list_agents()
         names = [a.name for a in agents]
@@ -48,7 +70,8 @@ class Ingestion:
             )
             results.append(result.data)
         
-        return results
+        return results    
+    
 
 def save_output_json(data, file_name: str):
     path = os.path.join(os.getcwd(), file_name)
@@ -60,17 +83,26 @@ def save_output_json(data, file_name: str):
 
 def main():
     API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
-    PATH = "data/ARACAJU.2025.03 - Baixo Padrão (Moradas da Aruana) - Alumbox.pdf"
+    FILE_NAME = 'ARACAJU.2025.03 - Baixo Padrão (Moradas da Aruana) - SH.pdf'
+    PATH = f"data/{FILE_NAME}"
     
     ingestor = Ingestion(api_key=API_KEY)
 
     result = ingestor.parsed(PATH)
     
     contents = ingestor.extract_pages_content(result=result)
+    full_text = "\n".join(contents)
     
+    resume = ingestor.extract_resume(full_text=full_text)
     itens = ingestor.extract_itens(pages_content=contents)
     
-    save_output_json(data=itens, file_name='data/data.json')
+    output = {
+        'file_name': FILE_NAME,
+        'resume': resume,
+        'itens': itens
+    }
+    
+    save_output_json(data=output, file_name='data/data.json')
 
 if __name__ == "__main__":
     main()
